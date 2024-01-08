@@ -1,0 +1,42 @@
+# .gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+bin/
+lib/
+
+# IDE files
+.vscode/
+.idea/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Miscellaneous
+*.log
+*.pyc
+*.swp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Node.js
+node_modules/
