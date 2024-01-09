@@ -13,9 +13,9 @@ class ApiClient:
         response = requests.post(url, data=payload_json, headers=headers)
         return response
 
-    def make_get_request(self, endpoint):
+    def make_get_request(self, endpoint, params=None):
         url = f"{self.base_url}/{endpoint}"
-        response = requests.get(url)
+        response = requests.get(url, params=params)
         return response
 
     def make_put_request(self, endpoint, payload):
@@ -34,11 +34,7 @@ class ApiClient:
         # Convert ClientData object to a dictionary
         payload_dict = vars(payload)
         response = self.make_post_request("clients/create", payload_dict)
-        # Check if the request was successful (status code 2xx)
-        if response.status_code // 100 == 2:
-            return True
-        else:
-            return False
+        return response
 
     def make_delete_all_clients_request(self):
         # Convert ClientData object to a dictionary
@@ -58,8 +54,9 @@ class ApiClient:
         else:
             return False
 
-    def make_get_all_clients_request(self):
-        response = self.make_get_request("clients")
+    def make_get_all_clients_request(self, cursor=0, count=100):
+        params = {"cursor": cursor, "count": count}
+        response = self.make_get_request("clients", params=params)
         return response
 
     def make_get_client_request(self, client_id):

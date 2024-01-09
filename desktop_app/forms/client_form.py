@@ -3,6 +3,7 @@ from actions.api_client import api_client
 from typing import List
 from models.client_data import ClientData
 import json
+from PyQt6.QtCore import pyqtSignal
 
 
 def load_json_file(file_path):
@@ -31,9 +32,11 @@ def json_to_combobox_transform(json_data,  key: str, filter_key: str, filter_val
 
 
 class ClientForm(QDialog):
-    def __init__(self):
-        super().__init__()
+    on_success_add: pyqtSignal
 
+    def __init__(self, on_success_add: pyqtSignal):
+        super().__init__()
+        self.on_success_add = on_success_add
         self.init_ui()
 
     def init_ui(self):
@@ -230,15 +233,16 @@ class ClientForm(QDialog):
             building_tower_name,
             unit_room_floor_building_no)
 
-        success = api_client.make_create_client_request(data)
+        response = api_client.make_create_client_request(data)
 
-        if success:
+        if response.status_code // 100 == 2:
             # Process the successful response
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Error")
+            msg_box.setWindowTitle("Congratulations")
             msg_box.setText("Client is created successfully")
             msg_box.exec()
-            self.close()
+            self.on_success_add(response.json())
+            self.accept()
 
         else:
             # Handle the error

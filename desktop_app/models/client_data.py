@@ -7,7 +7,7 @@ class ClientData:
                  zip_code: str, region: str, province: str, municipality_city: str,
                  town_district: str, barangay: str, subdivision_village_zone: str,
                  street_name: str, lot_block_phase_house_building_no: str,
-                 building_tower_name: str, unit_room_floor_building_no: str):
+                 building_tower_name: str, unit_room_floor_building_no: str, **kwargs):
         self.full_name = full_name
         self.contact_number = contact_number
         self.favorite_colors = favorite_colors
@@ -26,3 +26,12 @@ class ClientData:
         self.lot_block_phase_house_building_no = lot_block_phase_house_building_no
         self.building_tower_name = building_tower_name
         self.unit_room_floor_building_no = unit_room_floor_building_no
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
+class Client:
+    def __init__(self, user_id: str, data: ClientData):
+        self.user_id = user_id
+        self.data = data
