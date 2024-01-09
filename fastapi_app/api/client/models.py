@@ -9,7 +9,6 @@ class ClientData(BaseModel):
     favorite_colors: Union[List[str], str]  # checkbox
     gender: str  # radio "M" or "F"
     dependents_count: int  # number of dependends
-    income_range: str  # range
     birthday: str  # date
     notes: str  # textarea
     zip_code: str  # text

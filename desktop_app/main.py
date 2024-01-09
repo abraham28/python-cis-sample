@@ -1,5 +1,6 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from screens.home import HomeWindow
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -8,19 +9,15 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        # Create a button
-        button = QPushButton('Click me!', self)
-        button.clicked.connect(self.on_button_click)
+        self.home = HomeWindow()
 
-        # Set up the main window
-        self.setGeometry(100, 100, 400, 300)
         self.setWindowTitle('Client Information System')
 
-    def on_button_click(self):
-        print('Button clicked!')
+        self.setCentralWidget(self.home)
+
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication([])
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    app.exec()
