@@ -18,6 +18,8 @@ pip install -r requirements.txt
 python -m uvicorn fastapi_app.main:app --reload
 ```
 
+If you are not using the default port 8000 update the url in /desktop_app/actions/api_client.py
+
 3. Run the PyQt6 desktop application:
 
 ```bash

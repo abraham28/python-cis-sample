@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFormLayout, QTextEdit, QRadioButton, QHBoxLayout, QCheckBox, QSpinBox, QDateEdit, QComboBox, QMessageBox
-from actions.api_requests import make_post_request
+from actions.api_client import api_client
 from typing import List
 from models.client_data import ClientData
 import json
@@ -210,8 +210,6 @@ class ClientForm(QDialog):
         building_tower_name = self.edit_building_tower_name.text()
         unit_room_floor_building_no = self.edit_unit_room_floor_building_no.text()
 
-        api_url = "http://localhost:8000/clients/create"
-
         data = ClientData(
             full_name,
             contact_number,
@@ -232,7 +230,7 @@ class ClientForm(QDialog):
             building_tower_name,
             unit_room_floor_building_no)
 
-        success = make_post_request(api_url, data)
+        success = api_client.make_create_client_request(data)
 
         if success:
             # Process the successful response
