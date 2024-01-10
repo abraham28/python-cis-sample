@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFormLayout, QTextEdit, QRadioButton, QHBoxLayout, QCheckBox, QSpinBox, QDateEdit, QComboBox, QMessageBox
 from actions.api_client import api_client
-from typing import List
 from models.client_data import ClientData, Client
 import json
 from PyQt6.QtCore import pyqtSignal, QDate
@@ -84,7 +83,7 @@ class ClientForm(QDialog):
         self.edit_birthday = QDateEdit(self)
         self.edit_birthday.setDisplayFormat("MM-dd-yyyy")
 
-        regions_json = load_json_file('desktop_app/json_files/regions.json')
+        regions_json = load_json_file('regions.json')
         self.combobox_region = QComboBox(self)
         populate_combobox(self.combobox_region,
                           json_to_combobox_transform(regions_json, "reg_code", "", ""))
@@ -159,7 +158,7 @@ class ClientForm(QDialog):
         if not selected_value:
             return
         provinces_json = load_json_file(
-            'desktop_app/json_files/provinces.json')
+            'provinces.json')
         populate_combobox(self.combobox_province,
                           json_to_combobox_transform(provinces_json, "prov_code", "reg_code", selected_value))
 
@@ -168,7 +167,7 @@ class ClientForm(QDialog):
         if not selected_value:
             return
         city_mun_json = load_json_file(
-            'desktop_app/json_files/city-mun.json')
+            'city-mun.json')
         populate_combobox(self.combobox_municipality_city,
                           json_to_combobox_transform(city_mun_json, "mun_code", "prov_code", selected_value))
 
@@ -177,7 +176,7 @@ class ClientForm(QDialog):
         if not selected_value:
             return
         barangays_json = load_json_file(
-            'desktop_app/json_files/barangays.json')
+            'barangays.json')
         populate_combobox(self.combobox_barangay,
                           json_to_combobox_transform(barangays_json, "name", "mun_code", selected_value))
 
@@ -185,7 +184,7 @@ class ClientForm(QDialog):
         full_name = self.edit_full_name.text()
         contact_number = self.edit_contact_number.text()
 
-        favorite_colors: List[str] = [checkbox.text(
+        favorite_colors: list[str] = [checkbox.text(
         ) for checkbox in self.favorite_colors_checkbox_group if checkbox.isChecked()]
 
         if self.radio_gender_male.isChecked():

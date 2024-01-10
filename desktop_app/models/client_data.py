@@ -1,8 +1,5 @@
-from typing import List
-
-
 class ClientData:
-    def __init__(self, full_name: str, contact_number: str, favorite_colors: List[str], gender: str,
+    def __init__(self, full_name: str, contact_number: str, favorite_colors: list[str], gender: str,
                  dependents_count: int, birthday: str, notes: str,
                  zip_code: str, region: str, province: str, municipality_city: str,
                  town_district: str, barangay: str, subdivision_village_zone: str,
