@@ -17,7 +17,7 @@ class HomeWindow(QWidget):
         self.table_clients = QTableWidget(self)
         self.table_clients.setColumnCount(4)
         self.table_clients.setHorizontalHeaderLabels(
-            ["Name", "Contact Number", "", "", ""])
+            ["Name", "Contact Number", "", ""])
 
         layout = QVBoxLayout()
         layout.addWidget(self.label_title)
@@ -34,6 +34,7 @@ class HomeWindow(QWidget):
         layout.addWidget(self.button_prev)
 
         self.setLayout(layout)
+        self.adjustSize()
 
         self.home_logic.initialize_clients_data()
 

@@ -19,5 +19,6 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     window = MainWindow()
+    window.resize(380,310)
     window.show()
     app.exec()
