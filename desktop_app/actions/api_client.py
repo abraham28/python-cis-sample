@@ -59,7 +59,6 @@ class ApiClient:
     def make_get_all_clients_request(self, cursor=0, count=100):
         params = {"cursor": cursor, "count": count}
         response = self.make_get_request("clients", params=params)
-        print("after make_get_request")
         return response
 
     def make_get_client_request(self, client_id):
