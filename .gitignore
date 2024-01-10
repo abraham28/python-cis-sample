@@ -20,6 +20,7 @@ lib/
 *.pyc
 *.pyo
 *.pyd
+*build*
 
 # Miscellaneous
 *.log

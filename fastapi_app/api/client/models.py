@@ -1,12 +1,11 @@
 
 from pydantic import BaseModel
-from typing import List, Union
 
 
 class ClientData(BaseModel):
     full_name: str  # text
     contact_number: str  # text
-    favorite_colors: Union[List[str], str]  # checkbox
+    favorite_colors: list[str] | str  # checkbox
     gender: str  # radio "M" or "F"
     dependents_count: int  # number of dependends
     birthday: str  # date

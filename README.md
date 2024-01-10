@@ -23,7 +23,8 @@ If you are not using the default port 8564 update the url in /desktop_app/action
 3. Run the PyQt6 desktop application:
 
 ```bash
-python desktop_app/main.py
+cd desktop_app/
+python main.py
 ```
 
 4. For those using windows and has to run the redis server install Windows Subsystem for Linux (WSL)
