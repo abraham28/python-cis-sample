@@ -10,24 +10,26 @@ class ApiClient:
         url = f"{self.base_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
         payload_json = json.dumps(payloadDict)
-        response = requests.post(url, data=payload_json, headers=headers)
+        response = requests.post(
+            url, data=payload_json, headers=headers, timeout=10)
         return response
 
     def make_get_request(self, endpoint, params=None):
         url = f"{self.base_url}/{endpoint}"
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=10)
         return response
 
     def make_put_request(self, endpoint, payload):
         url = f"{self.base_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
         payload_json = json.dumps(payload)
-        response = requests.put(url, data=payload_json, headers=headers)
+        response = requests.put(url, data=payload_json,
+                                headers=headers, timeout=10)
         return response
 
     def make_delete_request(self, endpoint):
         url = f"{self.base_url}/{endpoint}"
-        response = requests.delete(url)
+        response = requests.delete(url, timeout=10)
         return response
 
     def make_create_client_request(self, payload: object):
@@ -57,6 +59,7 @@ class ApiClient:
     def make_get_all_clients_request(self, cursor=0, count=100):
         params = {"cursor": cursor, "count": count}
         response = self.make_get_request("clients", params=params)
+        print("after make_get_request")
         return response
 
     def make_get_client_request(self, client_id):
@@ -71,4 +74,4 @@ class ApiClient:
 
 
 # Change the base_url as needed
-api_client = ApiClient(base_url='http://localhost:8000')
+api_client = ApiClient(base_url='http://localhost:8564')

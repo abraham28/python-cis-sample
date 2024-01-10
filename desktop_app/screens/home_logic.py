@@ -1,14 +1,13 @@
 import math
 from PyQt6.QtWidgets import QTableWidgetItem, QMessageBox
 from forms.client_form import ClientForm
-from forms.client_form import ClientForm
 from actions.api_client import api_client
 from models.client_data import ClientData, Client
-from .client_details import ClientDetailsWindow
 
 
 class HomeLogic:
     def __init__(self, home_window):
+        super().__init__()
         from .home import HomeWindow
         self.home_window: HomeWindow = home_window
         self.current_page = 1

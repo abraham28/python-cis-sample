@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFormLayout, QTextEdit, QRadioButton, QHBoxLayout, QCheckBox, QSpinBox, QDateEdit, QComboBox, QMessageBox
 from actions.api_client import api_client
-from typing import Any, List
+from typing import List
 from models.client_data import ClientData, Client
 import json
 from PyQt6.QtCore import pyqtSignal, QDate

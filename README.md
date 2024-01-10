@@ -15,10 +15,10 @@ pip install -r requirements.txt
 2. Run the FastAPI backend:
 
 ```bash
-python -m uvicorn fastapi_app.main:app --reload
+python -m uvicorn fastapi_app.main:app --reload --host 0.0.0.0 --port 8564
 ```
 
-If you are not using the default port 8000 update the url in /desktop_app/actions/api_client.py
+If you are not using the default port 8564 update the url in /desktop_app/actions/api_client.py
 
 3. Run the PyQt6 desktop application:
 
@@ -33,6 +33,7 @@ wsl --install
 ```
 
 When you are now running the linux cli execute these commands
+
 ```shell
 curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
 
@@ -43,6 +44,21 @@ sudo apt-get install redis
 ```
 
 Lastly start the Redis server like so:
+
 ```shell
 sudo service redis-server start
 ```
+
+To Check if the redis-server is running
+
+```shell
+redis-cli
+```
+
+then run
+
+```shell
+ping
+```
+
+it should respond with PONG
