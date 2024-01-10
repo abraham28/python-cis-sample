@@ -15,7 +15,7 @@ class HomeWindow(QWidget):
         self.button_add.clicked.connect(self.home_logic.on_add_client_clicked)
 
         self.table_clients = QTableWidget(self)
-        self.table_clients.setColumnCount(5)
+        self.table_clients.setColumnCount(4)
         self.table_clients.setHorizontalHeaderLabels(
             ["Name", "Contact Number", "", "", ""])
 
@@ -37,28 +37,24 @@ class HomeWindow(QWidget):
 
         self.home_logic.initialize_clients_data()
 
-    def add_table_row(self, row_number, item_name, item_contact_number):
+    def add_table_row(self, row_number, item_name, item_contact_number, client_id):
         self.table_clients.setItem(row_number, 0, item_name)
         self.table_clients.setItem(
             row_number, 1, item_contact_number)
 
-        view_button = QPushButton("View", self)
-        view_button.clicked.connect(
-            lambda _, r=row_number: self.home_logic.view_client(r))
+        self.table_clients.item(row_number, 0).setData(1, client_id)
 
         edit_button = QPushButton("Edit", self)
         edit_button.clicked.connect(
-            lambda _, r=row_number: self.home_logic.edit_client(r))
+            lambda _, r=row_number: self.home_logic.edit_client(client_id))
 
         delete_button = QPushButton("Delete", self)
         delete_button.clicked.connect(
-            lambda _, r=row_number: self.home_logic.delete_client(r))
+            lambda _, r=row_number: self.home_logic.delete_client(client_id))
 
         self.table_clients.setCellWidget(
-            row_number, 2, view_button)
+            row_number, 2, edit_button)
         self.table_clients.setCellWidget(
-            row_number, 3, edit_button)
-        self.table_clients.setCellWidget(
-            row_number, 4, delete_button)
+            row_number, 3, delete_button)
 
         self.table_clients.resizeColumnsToContents()

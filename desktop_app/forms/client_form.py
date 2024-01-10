@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFormLayout, QTextEdit, QRadioButton, QHBoxLayout, QCheckBox, QSpinBox, QDateEdit, QComboBox, QMessageBox
 from actions.api_client import api_client
-from typing import List
-from models.client_data import ClientData
+from typing import Any, List
+from models.client_data import ClientData, Client
 import json
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QDate
 
 
 def load_json_file(file_path):
@@ -32,12 +32,15 @@ def json_to_combobox_transform(json_data,  key: str, filter_key: str, filter_val
 
 
 class ClientForm(QDialog):
-    on_success_add: pyqtSignal
+    on_success_add = pyqtSignal(dict)
+    on_success_edit = pyqtSignal(str, dict)
 
-    def __init__(self, on_success_add: pyqtSignal):
+    def __init__(self, client_to_edit: Client = None):
         super().__init__()
-        self.on_success_add = on_success_add
         self.init_ui()
+        self.client_to_edit = client_to_edit
+        if client_to_edit is not None:
+            self.populate_form_fields(client_to_edit)
 
     def init_ui(self):
 
@@ -68,7 +71,7 @@ class ClientForm(QDialog):
         self.edit_full_name = QLineEdit(self)
         self.edit_contact_number = QLineEdit(self)
 
-        self.favorite_colors_checkbox_group = []
+        self.favorite_colors_checkbox_group: list[QCheckBox] = []
 
         colors = ["Red", "Blue", "Pink", "Yellow"]
         for color in colors:
@@ -79,6 +82,7 @@ class ClientForm(QDialog):
         self.radio_gender_female = QRadioButton('Female', self)
         self.spinbox_dependents_count = QSpinBox(self)
         self.edit_birthday = QDateEdit(self)
+        self.edit_birthday.setDisplayFormat("MM-dd-yyyy")
 
         regions_json = load_json_file('desktop_app/json_files/regions.json')
         self.combobox_region = QComboBox(self)
@@ -202,10 +206,10 @@ class ClientForm(QDialog):
         birthday = self.edit_birthday.text()
         notes = self.edit_notes.toPlainText()
         zip_code = self.edit_zip_code.text()
-        region = self.combobox_region.currentText()
-        province = self.combobox_province.currentText()
-        municipality_city = self.combobox_municipality_city.currentText()
-        barangay = self.combobox_barangay.currentText()
+        region = self.combobox_region.currentData()
+        province = self.combobox_province.currentData()
+        municipality_city = self.combobox_municipality_city.currentData()
+        barangay = self.combobox_barangay.currentData()
         town_district = self.edit_town_district.text()
         subdivision_village_zone = self.edit_subdivision_village_zone.text()
         street_name = self.edit_street_name.text()
@@ -225,28 +229,96 @@ class ClientForm(QDialog):
             region,
             province,
             municipality_city,
-            barangay,
             town_district,
+            barangay,
             subdivision_village_zone,
             street_name,
             lot_block_phase_house_building_no,
             building_tower_name,
             unit_room_floor_building_no)
 
-        response = api_client.make_create_client_request(data)
+        if self.client_to_edit is not None:
+            response = api_client.make_update_client_request(
+                self.client_to_edit.user_id, data)
+            if response.status_code // 100 == 2:
+                # Process the successful response
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Client Update")
+                msg_box.setText("Client is updated successfully")
+                msg_box.exec()
+                self.on_success_edit.emit(
+                    self.client_to_edit.user_id, response.json())
+                self.accept()
 
-        if response.status_code // 100 == 2:
-            # Process the successful response
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Congratulations")
-            msg_box.setText("Client is created successfully")
-            msg_box.exec()
-            self.on_success_add(response.json())
-            self.accept()
+            else:
+                # Handle the error
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error")
+                msg_box.setText("Error occurred.")
+                msg_box.exec()
 
         else:
-            # Handle the error
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Error")
-            msg_box.setText("Error occurred.")
-            msg_box.exec()
+            response = api_client.make_create_client_request(data)
+            if response.status_code // 100 == 2:
+                # Process the successful response
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Client Creation")
+                msg_box.setText("Client is created successfully")
+                msg_box.exec()
+                self.on_success_add.emit(response.json())
+                self.accept()
+
+            else:
+                # Handle the error
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error")
+                msg_box.setText("Error occurred.")
+                msg_box.exec()
+
+    def populate_form_fields(self, client: Client):
+        self.edit_full_name.setText(client.data.full_name)
+        self.edit_contact_number.setText(client.data.contact_number)
+
+        for checkbox in self.favorite_colors_checkbox_group:
+            checkbox.setChecked(checkbox.text() in client.data.favorite_colors)
+
+        if client.data.gender == "Male":
+            self.radio_gender_male.setChecked(True)
+        elif client.data.gender == "Female":
+            self.radio_gender_female.setChecked(True)
+
+        self.spinbox_dependents_count.setValue(
+            int(client.data.dependents_count))
+
+        birth_date = QDate.fromString(
+            client.data.birthday, "MM-dd-yyyy")
+        self.edit_birthday.setDate(birth_date)
+
+        regionIndex = self.combobox_region.findData(client.data.region)
+        if regionIndex != -1:
+            self.combobox_region.setCurrentIndex(regionIndex)
+
+        provinceIndex = self.combobox_province.findData(client.data.province)
+        if provinceIndex != -1:
+            self.combobox_province.setCurrentIndex(provinceIndex)
+
+        cityMunIndex = self.combobox_municipality_city.findData(
+            client.data.municipality_city)
+        if cityMunIndex != -1:
+            self.combobox_municipality_city.setCurrentIndex(cityMunIndex)
+
+        barangayIndex = self.combobox_barangay.findData(client.data.barangay)
+        if barangayIndex != -1:
+            self.combobox_barangay.setCurrentIndex(barangayIndex)
+
+        self.edit_town_district.setText(client.data.town_district)
+        self.edit_subdivision_village_zone.setText(
+            client.data.subdivision_village_zone)
+        self.edit_street_name.setText(client.data.street_name)
+        self.edit_lot_block_phase_house_building_no.setText(
+            client.data.lot_block_phase_house_building_no)
+        self.edit_building_tower_name.setText(client.data.building_tower_name)
+        self.edit_unit_room_floor_building_no.setText(
+            client.data.unit_room_floor_building_no)
+        self.edit_zip_code.setText(client.data.zip_code)
+        self.edit_notes.setPlainText(client.data.notes)

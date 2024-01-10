@@ -4,6 +4,7 @@ from forms.client_form import ClientForm
 from forms.client_form import ClientForm
 from actions.api_client import api_client
 from models.client_data import ClientData, Client
+from .client_details import ClientDetailsWindow
 
 
 class HomeLogic:
@@ -15,7 +16,8 @@ class HomeLogic:
         self.clients_data: list[Client] = []
 
     def on_add_client_clicked(self):
-        client_form = ClientForm(self.add_single_table_data)
+        client_form = ClientForm()
+        client_form.on_success_add.connect(self.add_single_table_data)
         client_form.exec()
 
     def add_single_table_data(self, client):
@@ -51,23 +53,66 @@ class HomeLogic:
         for row, client in enumerate(self.clients_data[start_index:end_index]):
             name_item = QTableWidgetItem(client.data.full_name)
             contact_number_item = QTableWidgetItem(client.data.contact_number)
-            self.home_window.add_table_row(row, name_item, contact_number_item)
+            self.home_window.add_table_row(
+                row, name_item, contact_number_item, client.user_id)
 
         self.update_pagination_buttons()
 
-    def view_client(self, row):
-        # Implement view functionality here
-        print(f"Viewing client at row {row}")
+    def edit_client(self, client_id):
+        client_to_edit = next(
+            (client for client in self.clients_data if client.user_id == client_id), None)
 
-    def edit_client(self, row):
-        # Implement edit functionality here
-        print(f"Editing client at row {row}")
+        if client_to_edit is not None:
+            client_form = ClientForm(client_to_edit)
+            client_form.on_success_edit.connect(self.on_success_edit)
+            client_form.exec()
 
-    def delete_client(self, row):
-        # Implement delete functionality here
-        print(f"Deleting client at row {row}")
-        # After deleting, update the table
+    def on_success_edit(self, user_id: str, edited_client):
+        print(f"edited_client: {edited_client}")
+        solo_edited_client = Client(
+            user_id=user_id, data=ClientData(**edited_client["data"]))
+
+        for client in self.clients_data:
+            if client.user_id == solo_edited_client.user_id:
+                client.data = solo_edited_client.data
+                break
+
         self.populate_table()
+
+    def add_single_table_data(self, client):
+        solo_client = Client(
+            user_id=client["user_id"], data=ClientData(**client["data"]))
+
+        self.clients_data.append(solo_client)
+        self.populate_table()
+
+    def delete_client(self, client_id):
+        # Show confirmation dialog
+        reply = QMessageBox.question(
+            self.home_window,
+            "Delete Client",
+            "Are you sure you want to delete this client? This action cannot be reversed.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            # User confirmed deletion, proceed with the deletion
+            if api_client.make_delete_client_request(client_id):
+                print(f"Client {client_id} deleted successfully.")
+                # After deleting, update the table
+
+                client_index = next((index for index, client in enumerate(
+                    self.clients_data) if client.user_id == client_id), None)
+                if client_index is not None:
+                    del self.clients_data[client_index]
+
+                self.populate_table()
+            else:
+                print(f"Failed to delete client {client_id}.")
+        else:
+            # User chose not to delete
+            print("Deletion canceled.")
 
     def next_page(self):
         self.current_page += 1
